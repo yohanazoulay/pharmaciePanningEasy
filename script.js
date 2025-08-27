@@ -266,3 +266,20 @@ if(document.getElementById('scheduleForm')){
     calculateHours();
 }
 
+const helpBtn = document.getElementById('helpToggle');
+if(helpBtn){
+    const sidebar = document.getElementById('helpSidebar');
+    const overlay = document.getElementById('helpOverlay');
+    const closeBtn = document.getElementById('closeHelp');
+    const closeHelp = ()=>{
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+    };
+    helpBtn.addEventListener('click',()=>{
+        sidebar.classList.add('open');
+        overlay.classList.add('show');
+    });
+    closeBtn.addEventListener('click', closeHelp);
+    overlay.addEventListener('click', closeHelp);
+}
+

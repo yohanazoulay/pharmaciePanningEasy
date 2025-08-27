@@ -15,6 +15,7 @@ L'interface utilise Tailwind CSS et présente les différentes sections sous for
  - **Sauvegarde** : les données sont enregistrées côté serveur dans un fichier `.save` nommé d'après le code du projet. Un message toast confirme la réussite (ou signale une erreur) et rappelle de noter le code.
 - **Nettoyage** : à chaque chargement de la page, les fichiers `.save` plus anciens que 15 jours sont automatiquement supprimés.
 - **Export PDF** : un bouton « Planning imprimable (PDF) » ouvre une vue A4 paysage (semaine 1 puis semaine 2) prête à être imprimée ou enregistrée en PDF.
+- **Aide intégrée** : un bouton « Aide » affiche une barre latérale expliquant les étapes d'utilisation de l'outil.
 
 ## Structure des fichiers
 - **`index.php`** : point d'entrée de l'application. Gère la création ou le chargement d'un projet, lit et écrit les données dans les fichiers `.save` et génère le formulaire HTML du planning.
