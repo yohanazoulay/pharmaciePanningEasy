@@ -14,12 +14,11 @@ $code = $_GET['code'] ?? null;
 $new = isset($_GET['new']);
 $message = '';
 $error = '';
-$data = ['schedule'=>[], 'pharmacists'=>[]];
+$data = ['schedule'=>[]];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
     $code = preg_replace('/\D/', '', $_POST['code']);
     $data['schedule'] = $_POST['schedule'] ?? [];
-    $data['pharmacists'] = $_POST['pharmacists'] ?? [];
     file_put_contents("$code.save", json_encode($data));
     $message = 'Projet sauvegardé.';
 }
@@ -60,54 +59,71 @@ if ($new && !$code) {
 <?php else: ?>
     <h1>Projet #<?php echo htmlspecialchars($code); ?></h1>
     <?php if($message): ?><p class="message"><?php echo htmlspecialchars($message); ?></p><?php endif; ?>
-    <form method="post" id="scheduleForm">
-        <input type="hidden" name="code" value="<?php echo htmlspecialchars($code); ?>">
-        <table>
-            <thead>
-                <tr>
-                    <th>Jour</th>
-                    <th>Matin</th>
-                    <th>Après-midi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                $daysNames = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
-                for($week=1;$week<=2;$week++){
-                    foreach($daysNames as $d){
-                        $index = ($week-1)*7 + array_search($d,$daysNames);
-                        $sch = $data['schedule'][$index] ?? [];
-                        $ph = $data['pharmacists'][$index] ?? [];
-                        echo '<tr>';
-                        echo '<td>'.$d.' S'.$week.'</td>';
-                        echo '<td class="slot">'
-                            .'<input type="time" name="schedule['.$index.'][m_start]" value="'.($sch['m_start'] ?? '').'">'
-                            .'<input type="time" name="schedule['.$index.'][m_end]" value="'.($sch['m_end'] ?? '').'">'
-                            .'<select name="pharmacists['.$index.'][m]">'
-                                .'<option value="A"'.(($ph['m'] ?? '')=='A'?' selected':'').'>Pharmacien A</option>'
-                                .'<option value="B"'.(($ph['m'] ?? '')=='B'?' selected':'').'>Pharmacien B</option>'
-                            .'</select>'
-                            .'</td>';
-                        echo '<td class="slot">'
-                            .'<input type="time" name="schedule['.$index.'][a_start]" value="'.($sch['a_start'] ?? '').'">'
-                            .'<input type="time" name="schedule['.$index.'][a_end]" value="'.($sch['a_end'] ?? '').'">'
-                            .'<select name="pharmacists['.$index.'][a]">'
-                                .'<option value="A"'.(($ph['a'] ?? '')=='A'?' selected':'').'>Pharmacien A</option>'
-                                .'<option value="B"'.(($ph['a'] ?? '')=='B'?' selected':'').'>Pharmacien B</option>'
-                            .'</select>'
-                            .'</td>';
-                        echo '</tr>';
-                    }
-                }
-                ?>
-            </tbody>
-        </table>
-        <div class="totals">
-            <p>Pharmacien A: <span id="totalA">0</span> h</p>
-            <p>Pharmacien B: <span id="totalB">0</span> h</p>
+    <div class="columns">
+        <div class="planner">
+            <h2>Ce que vous avez fait aujourd'hui</h2>
+            <form method="post" id="scheduleForm">
+                <input type="hidden" name="code" value="<?php echo htmlspecialchars($code); ?>">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Jour</th>
+                            <th>Tranches d'ouverture</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $daysNames = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+                        for($day=0;$day<7;$day++){
+                            $segments = $data['schedule'][$day] ?? [];
+                            echo '<tr>';
+                            echo '<td>'.$daysNames[$day].'</td>';
+                            echo '<td class="segments" data-day="'.$day.'">';
+                            foreach($segments as $i=>$seg){
+                                $start = htmlspecialchars($seg['start'] ?? '');
+                                $end = htmlspecialchars($seg['end'] ?? '');
+                                $ph1 = $seg['ph1'] ?? 'A';
+                                $ph2 = $seg['ph2'] ?? 'A';
+                                echo '<div class="segment">'
+                                    .'<input type="time" name="schedule['.$day.']['.$i.'][start]" value="'.$start.'">'
+                                    .'<input type="time" name="schedule['.$day.']['.$i.'][end]" value="'.$end.'">'
+                                    .'<select name="schedule['.$day.']['.$i.'][ph1]">'
+                                        .'<option value="A"'.($ph1=='A'?' selected':'').'>A S1</option>'
+                                        .'<option value="B"'.($ph1=='B'?' selected':'').'>B S1</option>'
+                                    .'</select>'
+                                    .'<select name="schedule['.$day.']['.$i.'][ph2]">'
+                                        .'<option value="A"'.($ph2=='A'?' selected':'').'>A S2</option>'
+                                        .'<option value="B"'.($ph2=='B'?' selected':'').'>B S2</option>'
+                                    .'</select>'
+                                    .'<button type="button" class="remove-segment">&times;</button>'
+                                    .'</div>';
+                            }
+                            echo '</td>';
+                            echo '<td><button type="button" class="add-segment" data-day="'.$day.'">Ajouter tranche</button></td>';
+                            echo '</tr>';
+                        }
+                        ?>
+                    </tbody>
+                </table>
+                <button class="btn" type="submit" name="save" id="saveBtn">Sauvegarder</button>
+            </form>
         </div>
-        <button class="btn" type="submit" name="save" id="saveBtn">Sauvegarder</button>
-    </form>
+        <div class="summary">
+            <h2>Récapitulatif</h2>
+            <table class="recap">
+                <thead>
+                    <tr>
+                        <th></th><th>Semaine 1</th><th>Semaine 2</th><th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Pharmacien A</td><td id="w1A">0</td><td id="w2A">0</td><td id="totA">0</td></tr>
+                    <tr><td>Pharmacien B</td><td id="w1B">0</td><td id="w2B">0</td><td id="totB">0</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
     <p class="code-info">Code du projet: <strong><?php echo htmlspecialchars($code); ?></strong></p>
 <?php endif; ?>
 </div>
