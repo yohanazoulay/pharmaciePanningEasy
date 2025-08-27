@@ -99,6 +99,7 @@ if ($new && !$code) {
 <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>">
 </head>
 <body>
+<button id="helpToggle" class="help-button bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded fixed top-4 right-4">Aide</button>
 <div class="container mx-auto p-4">
 <?php if(!$code): ?>
     <h1>Planning Pharmacie</h1>
@@ -235,6 +236,17 @@ if ($new && !$code) {
     </a>
 </footer>
 <div id="toast" data-message="<?php echo htmlspecialchars($message); ?>" data-error="<?php echo htmlspecialchars($error); ?>"></div>
+<div id="helpOverlay" class="help-overlay"></div>
+<div id="helpSidebar" class="help-sidebar">
+    <button id="closeHelp" class="close-help">&times;</button>
+    <h2 class="text-xl font-semibold mb-4">Comment utiliser l'outil</h2>
+    <ol class="list-decimal list-inside space-y-2">
+        <li>Définir les noms et couleurs des pharmaciens.</li>
+        <li>Renseigner les horaires d'ouverture.</li>
+        <li>Ajouter le planning des pharmaciens.</li>
+        <li>Sauvegarder et noter le code du projet.</li>
+    </ol>
+</div>
 <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
 </body>
 </html>
