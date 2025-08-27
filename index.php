@@ -172,7 +172,7 @@ if ($new && !$code) {
                                 .'</div>';
                         }
                         echo '</td>';
-                        echo '<td><button type="button" class="add-segment" data-day="'.$day.'">Ajouter tranche</button></td>';
+                        echo '<td><button type="button" class="add-segment" data-day="'.$day.'">+ Ajouter tranche</button></td>';
                         echo '</tr>';
                     }
                     ?>
@@ -214,7 +214,7 @@ if ($new && !$code) {
                             .'<button type="button" class="remove-pharm">&times;</button>'
                             .'</div>';
                     }
-                    echo '<button type="button" class="add-pharm" data-day="'.$day.'">Ajouter tranche</button>';
+                    echo '<button type="button" class="add-pharm" data-day="'.$day.'">+ Ajouter tranche</button>';
                     echo '</td>';
                     echo '</tr>';
                 }
