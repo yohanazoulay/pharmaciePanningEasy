@@ -229,7 +229,7 @@ if ($new && !$code) {
 <?php endif; ?>
 </div>
 <footer class="text-center text-sm mt-4">
-    Fait avec amour par Meditrust pour les pharmacies
+    Fait avec ❤️ par Meditrust pour les pharmacies
     <a href="https://meditrust.io/contacter-nous/" target="_blank">
         <img src="https://meditrust.io/wp-content/uploads/2023/09/meditrust-logo-green.png" alt="Logo Meditrust" class="inline-block h-6 align-middle ml-2">
     </a>

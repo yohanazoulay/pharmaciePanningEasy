@@ -28,5 +28,5 @@ L'interface utilise Tailwind CSS et présente les différentes sections sous for
 - Un suivi de bugs séparé doit être maintenu pour chaque fonctionnalité.
 - Les fichiers CSS et JS sont chargés avec un paramètre de version basé sur leur date de modification afin d'éviter les problèmes de cache.
 - Les boutons « Ajouter tranche » sont stylisés dans un esprit Apple pour être plus visibles.
-- Le pied de page affiche « Fait avec amour par Meditrust pour les pharmacies » avec le logo redirigeant vers la page de contact.
+- Le pied de page affiche « Fait avec ❤️ par Meditrust pour les pharmacies » avec le logo redirigeant vers la page de contact.
 
