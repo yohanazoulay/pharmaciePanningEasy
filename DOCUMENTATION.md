@@ -7,7 +7,7 @@ Ce projet est une application web légère permettant de gérer les horaires d'o
 - **Chargement de projet** : le code permet de recharger un planning précédemment sauvegardé.
 - **Section 0 – Options** : permet de définir un nom et une couleur pour chacun des deux pharmaciens.
 - **Section 1 – Horaires d'ouverture** : pour chaque jour de la semaine, l'utilisateur peut ajouter autant de tranches d'ouverture qu'il le souhaite.
-- **Section 2 – Planning des pharmaciens** : des tranches indépendantes peuvent être ajoutées librement pour chaque jour afin d'assigner un pharmacien pour la semaine 1 et un autre pour la semaine 2.
+- **Section 2 – Planning des pharmaciens** : des tranches indépendantes peuvent être ajoutées pour chaque jour afin d'assigner un pharmacien pour la semaine 1 et un autre pour la semaine 2, mais elles doivent obligatoirement rester dans les horaires d'ouverture définis à la section 1.
 - **Section 3 – Récapitulatif** : affichage du total d'heures par pharmacien et du nombre d'heures d'ouverture (lundi-samedi).
 - **Calcul automatique** : le script JavaScript calcule en temps réel le nombre d'heures effectuées par chaque pharmacien pour chaque semaine, le total sur deux semaines ainsi que le nombre d'heures d'ouverture. L'enregistrement est désactivé si un pharmacien dépasse 70 heures.
  - **Sauvegarde** : les données sont enregistrées côté serveur dans un fichier `.save` nommé d'après le code du projet. Un message toast confirme la réussite (ou signale une erreur) et rappelle de noter le code.
