@@ -16,6 +16,7 @@ $message = '';
 $error = '';
 $data = [
     'schedule'=>[],
+    'pharm_sched'=>[],
     'pharmacists'=>[
         'A'=>['name'=>'Pharmacien A','color'=>'#ff6666'],
         'B'=>['name'=>'Pharmacien B','color'=>'#6666ff']
@@ -25,6 +26,7 @@ $data = [
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
     $code = preg_replace('/\D/', '', $_POST['code']);
     $data['schedule'] = $_POST['schedule'] ?? [];
+    $data['pharm_sched'] = $_POST['pharm_sched'] ?? [];
     $data['pharmacists'] = $_POST['pharmacists'] ?? $data['pharmacists'];
     file_put_contents("$code.save", json_encode($data));
     $message = 'Projet sauvegardé.';
@@ -37,6 +39,22 @@ if ($new && !$code) {
     if (file_exists("$code.save")) {
         $content = file_get_contents("$code.save");
         $data = json_decode($content, true) ?: $data;
+        if(!isset($data['pharm_sched'])){
+            $data['pharm_sched'] = [];
+        }
+        if(isset($data['schedule'][0][0]['ph1'])){
+            foreach($data['schedule'] as $d=>&$segs){
+                foreach($segs as $i=>$seg){
+                    $data['pharm_sched'][$d][$i] = [
+                        'start'=>$seg['start'] ?? '',
+                        'end'=>$seg['end'] ?? '',
+                        'ph1'=>$seg['ph1'] ?? 'A',
+                        'ph2'=>$seg['ph2'] ?? 'A'
+                    ];
+                    unset($segs[$i]['ph1'],$segs[$i]['ph2']);
+                }
+            }
+        }
         if(!isset($data['pharmacists'])){
             $data['pharmacists'] = [
                 'A'=>['name'=>'Pharmacien A','color'=>'#ff6666'],
@@ -132,10 +150,10 @@ if ($new && !$code) {
                                 <th>Planning</th>
                             </tr>
                         </thead>
-                        <tbody>
+                    <tbody>
                             <?php
                             for($day=0;$day<7;$day++){
-                                $segments = $data['schedule'][$day] ?? [];
+                                $segments = $data['pharm_sched'][$day] ?? [];
                                 echo '<tr>';
                                 echo '<td>'.$daysNames[$day].'</td>';
                                 echo '<td class="segments-pharm" data-day="'.$day.'">';
@@ -145,17 +163,20 @@ if ($new && !$code) {
                                     $ph1 = $seg['ph1'] ?? 'A';
                                     $ph2 = $seg['ph2'] ?? 'A';
                                     echo '<div class="segment" data-index="'.$i.'">'
-                                        .'<span class="time-range">'.$start.' - '.$end.'</span>'
-                                        .'<select name="schedule['.$day.']['.$i.'][ph1]" class="ph-select" data-slot="S1">'
+                                        .'<input type="time" name="pharm_sched['.$day.']['.$i.'][start]" value="'.$start.'">'
+                                        .'<input type="time" name="pharm_sched['.$day.']['.$i.'][end]" value="'.$end.'">'
+                                        .'<select name="pharm_sched['.$day.']['.$i.'][ph1]" class="ph-select" data-slot="S1">'
                                             .'<option value="A"'.($ph1=='A'?' selected':'').' style="background-color:'.$pharmacists['A']['color'].'">'.htmlspecialchars($pharmacists['A']['name']).' S1</option>'
                                             .'<option value="B"'.($ph1=='B'?' selected':'').' style="background-color:'.$pharmacists['B']['color'].'">'.htmlspecialchars($pharmacists['B']['name']).' S1</option>'
                                         .'</select>'
-                                        .'<select name="schedule['.$day.']['.$i.'][ph2]" class="ph-select" data-slot="S2">'
+                                        .'<select name="pharm_sched['.$day.']['.$i.'][ph2]" class="ph-select" data-slot="S2">'
                                             .'<option value="A"'.($ph2=='A'?' selected':'').' style="background-color:'.$pharmacists['A']['color'].'">'.htmlspecialchars($pharmacists['A']['name']).' S2</option>'
                                             .'<option value="B"'.($ph2=='B'?' selected':'').' style="background-color:'.$pharmacists['B']['color'].'">'.htmlspecialchars($pharmacists['B']['name']).' S2</option>'
                                         .'</select>'
+                                        .'<button type="button" class="remove-pharm">&times;</button>'
                                         .'</div>';
                                 }
+                                echo '<button type="button" class="add-pharm" data-day="'.$day.'">Ajouter tranche</button>';
                                 echo '</td>';
                                 echo '</tr>';
                             }
