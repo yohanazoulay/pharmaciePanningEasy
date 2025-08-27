@@ -41,7 +41,9 @@ function renumberSegments(day){
 
 function calculateHours(){
     const totals = {A:{w1:0,w2:0}, B:{w1:0,w2:0}};
+    let openHours = 0;
     document.querySelectorAll('.segments').forEach(dayContainer=>{
+        const dayIndex = parseInt(dayContainer.dataset.day,10);
         dayContainer.querySelectorAll('.segment').forEach(seg=>{
             const start = seg.querySelector('input[name$="[start]"]').value;
             const end = seg.querySelector('input[name$="[end]"]').value;
@@ -51,6 +53,7 @@ function calculateHours(){
                 const ph2 = seg.querySelector('select[name$="[ph2]"]').value;
                 totals[ph1].w1 += diff;
                 totals[ph2].w2 += diff;
+                if(dayIndex < 6) openHours += diff;
             }
         });
     });
@@ -60,6 +63,7 @@ function calculateHours(){
     document.getElementById('w2B').textContent = totals.B.w2;
     document.getElementById('totA').textContent = totals.A.w1 + totals.A.w2;
     document.getElementById('totB').textContent = totals.B.w1 + totals.B.w2;
+    document.getElementById('openHours').textContent = openHours;
     const saveBtn=document.getElementById('saveBtn');
     if(totals.A.w1 + totals.A.w2 > 70 || totals.B.w1 + totals.B.w2 > 70){
         saveBtn.disabled=true;

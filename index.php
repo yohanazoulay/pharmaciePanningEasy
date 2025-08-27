@@ -122,6 +122,7 @@ if ($new && !$code) {
                     <tr><td>Pharmacien B</td><td id="w1B">0</td><td id="w2B">0</td><td id="totB">0</td></tr>
                 </tbody>
             </table>
+            <p>Heures d'ouverture (Lun-Sam) : <span id="openHours">0</span></p>
         </div>
     </div>
     <p class="code-info">Code du projet: <strong><?php echo htmlspecialchars($code); ?></strong></p>
