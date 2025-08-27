@@ -41,12 +41,15 @@ function renumberSegments(day){
 
 function calculateHours(){
     const totals = {A:{w1:0,w2:0}, B:{w1:0,w2:0}};
+    let openHours = 0;
     document.querySelectorAll('.segments').forEach(dayContainer=>{
+        const dayIndex = parseInt(dayContainer.dataset.day,10);
         dayContainer.querySelectorAll('.segment').forEach(seg=>{
             const start = seg.querySelector('input[name$="[start]"]').value;
             const end = seg.querySelector('input[name$="[end]"]').value;
             if(start && end){
                 const diff = (new Date('1970-01-01T'+end) - new Date('1970-01-01T'+start))/3600000;
+                if(dayIndex < 6) openHours += diff;
                 const ph1 = seg.querySelector('select[name$="[ph1]"]').value;
                 const ph2 = seg.querySelector('select[name$="[ph2]"]').value;
                 totals[ph1].w1 += diff;
@@ -60,6 +63,8 @@ function calculateHours(){
     document.getElementById('w2B').textContent = totals.B.w2;
     document.getElementById('totA').textContent = totals.A.w1 + totals.A.w2;
     document.getElementById('totB').textContent = totals.B.w1 + totals.B.w2;
+    const openHoursEl = document.getElementById('openHours');
+    if(openHoursEl) openHoursEl.textContent = openHours;
     const saveBtn=document.getElementById('saveBtn');
     if(totals.A.w1 + totals.A.w2 > 70 || totals.B.w1 + totals.B.w2 > 70){
         saveBtn.disabled=true;
