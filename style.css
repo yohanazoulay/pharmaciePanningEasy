@@ -70,6 +70,7 @@ input[type="time"], select {
 .message {color: green;}
 .error {color: red;}
 .code-info {text-align: center; margin-top: 20px;}
+.open-hours {margin-top:10px; text-align:center;}
 @media (min-width:800px){
     .columns {flex-direction: row; align-items:flex-start;}
 }
