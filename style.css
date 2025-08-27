@@ -53,11 +53,17 @@ th, td {
     gap: 20px;
 }
 .planner, .summary {flex:1;}
-.segments .segment {
+.section {margin-bottom:30px;}
+.segments-open .segment,
+.segments-pharm .segment {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     margin-bottom: 6px;
+}
+.segments-pharm .time-range {
+    min-width: 120px;
+    align-self: center;
 }
 input[type="time"], select {
     padding: 6px;
