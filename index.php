@@ -42,7 +42,7 @@ if ($new && !$code) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Planning Pharmacie</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>">
 </head>
 <body>
 <div class="container">
@@ -128,6 +128,6 @@ if ($new && !$code) {
     <p class="code-info">Code du projet: <strong><?php echo htmlspecialchars($code); ?></strong></p>
 <?php endif; ?>
 </div>
-<script src="script.js"></script>
+<script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
 </body>
 </html>
