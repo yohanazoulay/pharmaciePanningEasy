@@ -70,6 +70,15 @@ input[type="time"], select {
     border: 1px solid #ccc;
     border-radius: 6px;
 }
+.section-options .pharmacist-option {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+}
+.ph-select {
+    color:#fff;
+}
 .add-segment {padding:6px 10px;}
 .summary table {width:100%; border-collapse: collapse;}
 .summary th, .summary td {border-bottom:1px solid #ccc; padding:8px; text-align:center;}

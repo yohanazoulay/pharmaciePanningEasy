@@ -5,6 +5,7 @@ Ce projet est une application web légère permettant de gérer les horaires d'o
 ## Fonctionnement général
 - **Création de projet** : l'utilisateur génère un code unique permettant d'identifier un planning.
 - **Chargement de projet** : le code permet de recharger un planning précédemment sauvegardé.
+- **Section 0 – Options** : permet de définir un nom et une couleur pour chacun des deux pharmaciens.
 - **Section 1 – Horaires d'ouverture** : pour chaque jour de la semaine, l'utilisateur peut ajouter autant de tranches d'ouverture qu'il le souhaite.
 - **Section 2 – Planning des pharmaciens** : pour chaque tranche définie, un pharmacien est attribué pour la semaine 1 et un autre pour la semaine 2.
 - **Section 3 – Récapitulatif** : affichage du total d'heures par pharmacien et du nombre d'heures d'ouverture (lundi-samedi).
