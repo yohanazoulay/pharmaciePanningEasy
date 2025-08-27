@@ -28,8 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
     $data['schedule'] = $_POST['schedule'] ?? [];
     $data['pharm_sched'] = $_POST['pharm_sched'] ?? [];
     $data['pharmacists'] = $_POST['pharmacists'] ?? $data['pharmacists'];
-    file_put_contents("$code.save", json_encode($data));
-    $message = 'Projet sauvegardé.';
+    if (file_put_contents("$code.save", json_encode($data)) !== false) {
+        $message = 'Projet sauvegardé. Pensez à noter votre code d\'accès pour réouvrir votre travail.';
+    } else {
+        $error = 'Erreur lors de la sauvegarde.';
+    }
 }
 
 if ($new && !$code) {
@@ -206,6 +209,7 @@ if ($new && !$code) {
     <p class="code-info">Code du projet: <strong><?php echo htmlspecialchars($code); ?></strong></p>
 <?php endif; ?>
 </div>
+<div id="toast" data-message="<?php echo htmlspecialchars($message); ?>" data-error="<?php echo htmlspecialchars($error); ?>"></div>
 <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
 </body>
 </html>

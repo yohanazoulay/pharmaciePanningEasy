@@ -11,6 +11,18 @@ function getPharmacistInfo(){
     };
 }
 
+function showToast(message, isError=false){
+    const toast = document.createElement('div');
+    toast.className = 'toast' + (isError ? ' error' : '');
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    requestAnimationFrame(()=>toast.classList.add('show'));
+    setTimeout(()=>{
+        toast.classList.remove('show');
+        setTimeout(()=>toast.remove(),500);
+    },3000);
+}
+
 function applySelectStyles(){
     const info = getPharmacistInfo();
     document.querySelectorAll('.ph-select').forEach(sel=>{
@@ -95,6 +107,12 @@ function addPharmSegment(day, data={}){
     });
     applySelectStyles();
     calculateHours();
+}
+
+const toastEl = document.getElementById('toast');
+if(toastEl){
+    if(toastEl.dataset.message) showToast(toastEl.dataset.message);
+    if(toastEl.dataset.error) showToast(toastEl.dataset.error, true);
 }
 
 function renumberPharmSegments(day){
