@@ -66,7 +66,7 @@ h2 { text-align: center; margin-top: 0; }
     </table>
 <?php endfor; ?>
 <footer style="text-align:center;font-size:12px;margin-top:20px;">
-    Fait avec amour par Meditrust pour les pharmacies
+    Fait avec ❤️ par Meditrust pour les pharmacies
     <a href="https://meditrust.io/contacter-nous/" target="_blank">
         <img src="https://meditrust.io/wp-content/uploads/2023/09/meditrust-logo-green.png" alt="Logo Meditrust" style="height:20px;vertical-align:middle;margin-left:4px;">
     </a>
