@@ -7,3 +7,6 @@
 ## 2025-08-28
 - **Problème** : possibilité d'ajouter un horaire de pharmacien en dehors des heures d'ouverture de l'officine.
 - **Résolution** : ajout de contrôles côté client et côté serveur. Le formulaire refuse désormais les tranches hors horaires d'ouverture et celles-ci sont ignorées à la sauvegarde.
+
+## 2025-08-29
+- **Amélioration** : refonte de l'interface avec Tailwind CSS. Les sections sont présentées sous forme de cartes, les sections 0 et 3 partagent une ligne en deux colonnes et les sections 1 et 2 occupent chacune toute la largeur.

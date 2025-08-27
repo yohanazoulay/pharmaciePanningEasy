@@ -95,138 +95,137 @@ if ($new && !$code) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Planning Pharmacie</title>
+<script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>">
 </head>
 <body>
-<div class="container">
+<div class="container mx-auto p-4">
 <?php if(!$code): ?>
     <h1>Planning Pharmacie</h1>
     <?php if($error): ?><p class="error"><?php echo htmlspecialchars($error); ?></p><?php endif; ?>
     <div class="options">
-        <a class="btn" href="?new=1">Nouveau projet</a>
+        <a class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded" href="?new=1">Nouveau projet</a>
         <form method="get" class="load-form">
             <input type="text" name="code" placeholder="Code projet" minlength="8" maxlength="8" required>
-            <button class="btn" type="submit">Charger</button>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded" type="submit">Charger</button>
         </form>
     </div>
 <?php else: ?>
     <h1>Projet #<?php echo htmlspecialchars($code); ?></h1>
     <?php if($message): ?><p class="message"><?php echo htmlspecialchars($message); ?></p><?php endif; ?>
     <?php $pharmacists = $data['pharmacists']; ?>
-    <div class="columns">
-        <div class="planner">
-            <form method="post" id="scheduleForm">
-                <input type="hidden" name="code" value="<?php echo htmlspecialchars($code); ?>">
-                <?php $daysNames = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche']; ?>
-                <div class="section section-options">
-                    <h2>Section 0 : Options</h2>
-                    <div class="pharmacist-option">
-                        <label>Nom pharmacien A <input type="text" name="pharmacists[A][name]" value="<?php echo htmlspecialchars($pharmacists['A']['name']); ?>"></label>
-                        <label>Couleur <input type="color" name="pharmacists[A][color]" value="<?php echo htmlspecialchars($pharmacists['A']['color']); ?>"></label>
-                    </div>
-                    <div class="pharmacist-option">
-                        <label>Nom pharmacien B <input type="text" name="pharmacists[B][name]" value="<?php echo htmlspecialchars($pharmacists['B']['name']); ?>"></label>
-                        <label>Couleur <input type="color" name="pharmacists[B][color]" value="<?php echo htmlspecialchars($pharmacists['B']['color']); ?>"></label>
-                    </div>
+    <form method="post" id="scheduleForm" class="space-y-4">
+        <input type="hidden" name="code" value="<?php echo htmlspecialchars($code); ?>">
+        <?php $daysNames = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche']; ?>
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="section section-options bg-white rounded shadow p-4">
+                <h2 class="text-xl font-semibold mb-2">Section 0 : Options</h2>
+                <div class="pharmacist-option">
+                    <label>Nom pharmacien A <input type="text" name="pharmacists[A][name]" value="<?php echo htmlspecialchars($pharmacists['A']['name']); ?>"></label>
+                    <label>Couleur <input type="color" name="pharmacists[A][color]" value="<?php echo htmlspecialchars($pharmacists['A']['color']); ?>"></label>
                 </div>
-                <div class="section section-openings">
-                    <h2>Section 1 : Horaires d'ouverture</h2>
-                    <table class="openings">
-                        <thead>
-                            <tr>
-                                <th>Jour</th>
-                                <th>Tranches d'ouverture</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            for($day=0;$day<7;$day++){
-                                $segments = $data['schedule'][$day] ?? [];
-                                echo '<tr>';
-                                echo '<td>'.$daysNames[$day].'</td>';
-                                echo '<td class="segments-open" data-day="'.$day.'">';
-                                foreach($segments as $i=>$seg){
-                                    $start = htmlspecialchars($seg['start'] ?? '');
-                                    $end = htmlspecialchars($seg['end'] ?? '');
-                                    echo '<div class="segment" data-index="'.$i.'">'
-                                        .'<input type="time" name="schedule['.$day.']['.$i.'][start]" value="'.$start.'">'
-                                        .'<input type="time" name="schedule['.$day.']['.$i.'][end]" value="'.$end.'">'
-                                        .'<button type="button" class="remove-segment">&times;</button>'
-                                        .'</div>';
-                                }
-                                echo '</td>';
-                                echo '<td><button type="button" class="add-segment" data-day="'.$day.'">Ajouter tranche</button></td>';
-                                echo '</tr>';
-                            }
-                            ?>
-                        </tbody>
-                    </table>
+                <div class="pharmacist-option">
+                    <label>Nom pharmacien B <input type="text" name="pharmacists[B][name]" value="<?php echo htmlspecialchars($pharmacists['B']['name']); ?>"></label>
+                    <label>Couleur <input type="color" name="pharmacists[B][color]" value="<?php echo htmlspecialchars($pharmacists['B']['color']); ?>"></label>
                 </div>
-                <div class="section section-pharmacists">
-                    <h2>Section 2 : Planning des pharmaciens</h2>
-                    <table class="planning">
-                        <thead>
-                            <tr>
-                                <th>Jour</th>
-                                <th>Planning</th>
-                            </tr>
-                        </thead>
+            </div>
+            <div class="section summary bg-white rounded shadow p-4">
+                <h2 class="text-xl font-semibold mb-2">Section 3 : Récapitulatif</h2>
+                <table class="recap">
+                    <thead>
+                        <tr>
+                            <th></th><th>Semaine 1</th><th>Semaine 2</th><th>Total</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                            <?php
-                            for($day=0;$day<7;$day++){
-                                $segments = $data['pharm_sched'][$day] ?? [];
-                                echo '<tr>';
-                                echo '<td>'.$daysNames[$day].'</td>';
-                                echo '<td class="segments-pharm" data-day="'.$day.'">';
-                                foreach($segments as $i=>$seg){
-                                    $start = htmlspecialchars($seg['start'] ?? '');
-                                    $end = htmlspecialchars($seg['end'] ?? '');
-                                    $ph1 = $seg['ph1'] ?? 'A';
-                                    $ph2 = $seg['ph2'] ?? 'A';
-                                    echo '<div class="segment" data-index="'.$i.'">'
-                                        .'<input type="time" name="pharm_sched['.$day.']['.$i.'][start]" value="'.$start.'">'
-                                        .'<input type="time" name="pharm_sched['.$day.']['.$i.'][end]" value="'.$end.'">'
-                                        .'<select name="pharm_sched['.$day.']['.$i.'][ph1]" class="ph-select" data-slot="S1">'
-                                            .'<option value="A"'.($ph1=='A'?' selected':'').' style="background-color:'.$pharmacists['A']['color'].'">'.htmlspecialchars($pharmacists['A']['name']).' S1</option>'
-                                            .'<option value="B"'.($ph1=='B'?' selected':'').' style="background-color:'.$pharmacists['B']['color'].'">'.htmlspecialchars($pharmacists['B']['name']).' S1</option>'
-                                        .'</select>'
-                                        .'<select name="pharm_sched['.$day.']['.$i.'][ph2]" class="ph-select" data-slot="S2">'
-                                            .'<option value="A"'.($ph2=='A'?' selected':'').' style="background-color:'.$pharmacists['A']['color'].'">'.htmlspecialchars($pharmacists['A']['name']).' S2</option>'
-                                            .'<option value="B"'.($ph2=='B'?' selected':'').' style="background-color:'.$pharmacists['B']['color'].'">'.htmlspecialchars($pharmacists['B']['name']).' S2</option>'
-                                        .'</select>'
-                                        .'<button type="button" class="remove-pharm">&times;</button>'
-                                        .'</div>';
-                                }
-                                echo '<button type="button" class="add-pharm" data-day="'.$day.'">Ajouter tranche</button>';
-                                echo '</td>';
-                                echo '</tr>';
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
-                <button class="btn" type="submit" name="save" id="saveBtn">Sauvegarder</button>
-            </form>
+                        <tr><td id="labelA" style="color: <?php echo htmlspecialchars($pharmacists['A']['color']); ?>"><?php echo htmlspecialchars($pharmacists['A']['name']); ?></td><td id="w1A">0</td><td id="w2A">0</td><td id="totA">0</td></tr>
+                        <tr><td id="labelB" style="color: <?php echo htmlspecialchars($pharmacists['B']['color']); ?>"><?php echo htmlspecialchars($pharmacists['B']['name']); ?></td><td id="w1B">0</td><td id="w2B">0</td><td id="totB">0</td></tr>
+                    </tbody>
+                </table>
+                <p class="open-hours text-center mt-2">Heures d'ouverture (Lun-Sam): <span id="openHours">0</span></p>
+            </div>
         </div>
-        <div class="summary">
-            <h2>Section 3 : Récapitulatif</h2>
-            <table class="recap">
+        <div class="section section-openings bg-white rounded shadow p-4">
+            <h2 class="text-xl font-semibold mb-2">Section 1 : Horaires d'ouverture</h2>
+            <table class="openings">
                 <thead>
                     <tr>
-                        <th></th><th>Semaine 1</th><th>Semaine 2</th><th>Total</th>
+                        <th>Jour</th>
+                        <th>Tranches d'ouverture</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td id="labelA" style="color: <?php echo htmlspecialchars($pharmacists['A']['color']); ?>"><?php echo htmlspecialchars($pharmacists['A']['name']); ?></td><td id="w1A">0</td><td id="w2A">0</td><td id="totA">0</td></tr>
-                    <tr><td id="labelB" style="color: <?php echo htmlspecialchars($pharmacists['B']['color']); ?>"><?php echo htmlspecialchars($pharmacists['B']['name']); ?></td><td id="w1B">0</td><td id="w2B">0</td><td id="totB">0</td></tr>
+                    <?php
+                    for($day=0;$day<7;$day++){
+                        $segments = $data['schedule'][$day] ?? [];
+                        echo '<tr>';
+                        echo '<td>'.$daysNames[$day].'</td>';
+                        echo '<td class="segments-open" data-day="'.$day.'">';
+                        foreach($segments as $i=>$seg){
+                            $start = htmlspecialchars($seg['start'] ?? '');
+                            $end = htmlspecialchars($seg['end'] ?? '');
+                            echo '<div class="segment" data-index="'.$i.'">'
+                                .'<input type="time" name="schedule['.$day.']['.$i.'][start]" value="'.$start.'">'
+                                .'<input type="time" name="schedule['.$day.']['.$i.'][end]" value="'.$end.'">'
+                                .'<button type="button" class="remove-segment">&times;</button>'
+                                .'</div>';
+                        }
+                        echo '</td>';
+                        echo '<td><button type="button" class="add-segment" data-day="'.$day.'">Ajouter tranche</button></td>';
+                        echo '</tr>';
+                    }
+                    ?>
                 </tbody>
             </table>
-            <p class="open-hours">Heures d'ouverture (Lun-Sam): <span id="openHours">0</span></p>
         </div>
-    </div>
+        <div class="section section-pharmacists bg-white rounded shadow p-4">
+            <h2 class="text-xl font-semibold mb-2">Section 2 : Planning des pharmaciens</h2>
+            <table class="planning">
+                <thead>
+                    <tr>
+                        <th>Jour</th>
+                        <th>Planning</th>
+                    </tr>
+                </thead>
+            <tbody>
+                <?php
+                for($day=0;$day<7;$day++){
+                    $segments = $data['pharm_sched'][$day] ?? [];
+                    echo '<tr>';
+                    echo '<td>'.$daysNames[$day].'</td>';
+                    echo '<td class="segments-pharm" data-day="'.$day.'">';
+                    foreach($segments as $i=>$seg){
+                        $start = htmlspecialchars($seg['start'] ?? '');
+                        $end = htmlspecialchars($seg['end'] ?? '');
+                        $ph1 = $seg['ph1'] ?? 'A';
+                        $ph2 = $seg['ph2'] ?? 'A';
+                        echo '<div class="segment" data-index="'.$i.'">'
+                            .'<input type="time" name="pharm_sched['.$day.']['.$i.'][start]" value="'.$start.'">'
+                            .'<input type="time" name="pharm_sched['.$day.']['.$i.'][end]" value="'.$end.'">'
+                            .'<select name="pharm_sched['.$day.']['.$i.'][ph1]" class="ph-select" data-slot="S1">'
+                                .'<option value="A"'.($ph1=='A'?' selected':'').' style="background-color:'.$pharmacists['A']['color'].'">'.htmlspecialchars($pharmacists['A']['name']).' S1</option>'
+                                .'<option value="B"'.($ph1=='B'?' selected':'').' style="background-color:'.$pharmacists['B']['color'].'">'.htmlspecialchars($pharmacists['B']['name']).' S1</option>'
+                            .'</select>'
+                            .'<select name="pharm_sched['.$day.']['.$i.'][ph2]" class="ph-select" data-slot="S2">'
+                                .'<option value="A"'.($ph2=='A'?' selected':'').' style="background-color:'.$pharmacists['A']['color'].'">'.htmlspecialchars($pharmacists['A']['name']).' S2</option>'
+                                .'<option value="B"'.($ph2=='B'?' selected':'').' style="background-color:'.$pharmacists['B']['color'].'">'.htmlspecialchars($pharmacists['B']['name']).' S2</option>'
+                            .'</select>'
+                            .'<button type="button" class="remove-pharm">&times;</button>'
+                            .'</div>';
+                    }
+                    echo '<button type="button" class="add-pharm" data-day="'.$day.'">Ajouter tranche</button>';
+                    echo '</td>';
+                    echo '</tr>';
+                }
+                ?>
+            </tbody>
+            </table>
+        </div>
+        <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded" type="submit" name="save" id="saveBtn">Sauvegarder</button>
+    </form>
     <p class="code-info">Code du projet: <strong><?php echo htmlspecialchars($code); ?></strong></p>
-    <p class="code-info"><a class="btn" target="_blank" href="print.php?code=<?php echo htmlspecialchars($code); ?>">Planning imprimable (PDF)</a></p>
+    <p class="code-info"><a class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded inline-block" target="_blank" href="print.php?code=<?php echo htmlspecialchars($code); ?>">Planning imprimable (PDF)</a></p>
 <?php endif; ?>
 </div>
 <div id="toast" data-message="<?php echo htmlspecialchars($message); ?>" data-error="<?php echo htmlspecialchars($error); ?>"></div>

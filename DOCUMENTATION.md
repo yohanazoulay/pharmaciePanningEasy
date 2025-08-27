@@ -2,6 +2,8 @@
 
 Ce projet est une application web légère permettant de gérer les horaires d'ouverture d'une pharmacie ainsi que le planning de deux pharmaciens sur deux semaines.
 
+L'interface utilise Tailwind CSS et présente les différentes sections sous forme de cartes pour une meilleure lisibilité (Sections 0 et 3 côte à côte, puis les sections 1 et 2 en pleine largeur).
+
 ## Fonctionnement général
 - **Création de projet** : l'utilisateur génère un code unique permettant d'identifier un planning.
 - **Chargement de projet** : le code permet de recharger un planning précédemment sauvegardé.
