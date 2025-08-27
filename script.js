@@ -1,3 +1,35 @@
+function getPharmacistInfo(){
+    return {
+        A:{
+            name: document.querySelector('input[name="pharmacists[A][name]"]').value || 'A',
+            color: document.querySelector('input[name="pharmacists[A][color]"]').value || '#ff6666'
+        },
+        B:{
+            name: document.querySelector('input[name="pharmacists[B][name]"]').value || 'B',
+            color: document.querySelector('input[name="pharmacists[B][color]"]').value || '#6666ff'
+        }
+    };
+}
+
+function applySelectStyles(){
+    const info = getPharmacistInfo();
+    document.querySelectorAll('.ph-select').forEach(sel=>{
+        const ph = sel.value;
+        sel.style.backgroundColor = info[ph].color;
+        sel.style.color = '#fff';
+        sel.options[0].textContent = `${info.A.name} ${sel.dataset.slot}`;
+        sel.options[0].style.backgroundColor = info.A.color;
+        sel.options[0].style.color = '#fff';
+        sel.options[1].textContent = `${info.B.name} ${sel.dataset.slot}`;
+        sel.options[1].style.backgroundColor = info.B.color;
+        sel.options[1].style.color = '#fff';
+    });
+    const labelA = document.getElementById('labelA');
+    const labelB = document.getElementById('labelB');
+    if(labelA){ labelA.textContent = info.A.name; labelA.style.color = info.A.color; }
+    if(labelB){ labelB.textContent = info.B.name; labelB.style.color = info.B.color; }
+}
+
 function updateTimeRange(day, index){
     const openSeg = document.querySelector(`.segments-open[data-day="${day}"] .segment[data-index="${index}"]`);
     const pharmSeg = document.querySelector(`.segments-pharm[data-day="${day}"] .segment[data-index="${index}"]`);
@@ -23,18 +55,19 @@ function addSegment(day, data={}){
     `;
     openContainer.appendChild(segOpen);
 
+    const info = getPharmacistInfo();
     const segPharm = document.createElement('div');
     segPharm.className = 'segment';
     segPharm.dataset.index = index;
     segPharm.innerHTML = `
         <span class="time-range">${data.start||''} - ${data.end||''}</span>
-        <select name="schedule[${day}][${index}][ph1]">
-            <option value="A" ${data.ph1==='B'?'':'selected'}>A S1</option>
-            <option value="B" ${data.ph1==='B'?'selected':''}>B S1</option>
+        <select name="schedule[${day}][${index}][ph1]" class="ph-select" data-slot="S1">
+            <option value="A" ${data.ph1==='B'?'':'selected'}>${info.A.name} S1</option>
+            <option value="B" ${data.ph1==='B'?'selected':''}>${info.B.name} S1</option>
         </select>
-        <select name="schedule[${day}][${index}][ph2]">
-            <option value="A" ${data.ph2==='B'?'':'selected'}>A S2</option>
-            <option value="B" ${data.ph2==='B'?'selected':''}>B S2</option>
+        <select name="schedule[${day}][${index}][ph2]" class="ph-select" data-slot="S2">
+            <option value="A" ${data.ph2==='B'?'':'selected'}>${info.A.name} S2</option>
+            <option value="B" ${data.ph2==='B'?'selected':''}>${info.B.name} S2</option>
         </select>
     `;
     pharmContainer.appendChild(segPharm);
@@ -51,7 +84,10 @@ function addSegment(day, data={}){
         renumberSegments(day);
         calculateHours();
     });
-    segPharm.querySelectorAll('select').forEach(el=>el.addEventListener('change', calculateHours));
+    segPharm.querySelectorAll('select').forEach(el=>{
+        el.addEventListener('change', ()=>{applySelectStyles();calculateHours();});
+    });
+    applySelectStyles();
     calculateHours();
 }
 
@@ -141,8 +177,10 @@ if(document.getElementById('scheduleForm')){
         });
     });
     document.querySelectorAll('.segments-pharm .segment').forEach(seg=>{
-        seg.querySelectorAll('select').forEach(el=>el.addEventListener('change', calculateHours));
+        seg.querySelectorAll('select').forEach(el=>el.addEventListener('change', ()=>{applySelectStyles();calculateHours();}));
     });
+    document.querySelectorAll('input[name^="pharmacists"]').forEach(inp=>inp.addEventListener('input', applySelectStyles));
+    applySelectStyles();
     calculateHours();
 }
 

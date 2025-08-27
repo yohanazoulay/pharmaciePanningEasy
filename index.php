@@ -14,11 +14,18 @@ $code = $_GET['code'] ?? null;
 $new = isset($_GET['new']);
 $message = '';
 $error = '';
-$data = ['schedule'=>[]];
+$data = [
+    'schedule'=>[],
+    'pharmacists'=>[
+        'A'=>['name'=>'Pharmacien A','color'=>'#ff6666'],
+        'B'=>['name'=>'Pharmacien B','color'=>'#6666ff']
+    ]
+];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
     $code = preg_replace('/\D/', '', $_POST['code']);
     $data['schedule'] = $_POST['schedule'] ?? [];
+    $data['pharmacists'] = $_POST['pharmacists'] ?? $data['pharmacists'];
     file_put_contents("$code.save", json_encode($data));
     $message = 'Projet sauvegardé.';
 }
@@ -30,6 +37,12 @@ if ($new && !$code) {
     if (file_exists("$code.save")) {
         $content = file_get_contents("$code.save");
         $data = json_decode($content, true) ?: $data;
+        if(!isset($data['pharmacists'])){
+            $data['pharmacists'] = [
+                'A'=>['name'=>'Pharmacien A','color'=>'#ff6666'],
+                'B'=>['name'=>'Pharmacien B','color'=>'#6666ff']
+            ];
+        }
     } else {
         $error = 'Projet introuvable.';
         $code = null;
@@ -59,11 +72,23 @@ if ($new && !$code) {
 <?php else: ?>
     <h1>Projet #<?php echo htmlspecialchars($code); ?></h1>
     <?php if($message): ?><p class="message"><?php echo htmlspecialchars($message); ?></p><?php endif; ?>
+    <?php $pharmacists = $data['pharmacists']; ?>
     <div class="columns">
         <div class="planner">
             <form method="post" id="scheduleForm">
                 <input type="hidden" name="code" value="<?php echo htmlspecialchars($code); ?>">
                 <?php $daysNames = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche']; ?>
+                <div class="section section-options">
+                    <h2>Section 0 : Options</h2>
+                    <div class="pharmacist-option">
+                        <label>Nom pharmacien A <input type="text" name="pharmacists[A][name]" value="<?php echo htmlspecialchars($pharmacists['A']['name']); ?>"></label>
+                        <label>Couleur <input type="color" name="pharmacists[A][color]" value="<?php echo htmlspecialchars($pharmacists['A']['color']); ?>"></label>
+                    </div>
+                    <div class="pharmacist-option">
+                        <label>Nom pharmacien B <input type="text" name="pharmacists[B][name]" value="<?php echo htmlspecialchars($pharmacists['B']['name']); ?>"></label>
+                        <label>Couleur <input type="color" name="pharmacists[B][color]" value="<?php echo htmlspecialchars($pharmacists['B']['color']); ?>"></label>
+                    </div>
+                </div>
                 <div class="section section-openings">
                     <h2>Section 1 : Horaires d'ouverture</h2>
                     <table class="openings">
@@ -121,13 +146,13 @@ if ($new && !$code) {
                                     $ph2 = $seg['ph2'] ?? 'A';
                                     echo '<div class="segment" data-index="'.$i.'">'
                                         .'<span class="time-range">'.$start.' - '.$end.'</span>'
-                                        .'<select name="schedule['.$day.']['.$i.'][ph1]">'
-                                            .'<option value="A"'.($ph1=='A'?' selected':'').'>A S1</option>'
-                                            .'<option value="B"'.($ph1=='B'?' selected':'').'>B S1</option>'
+                                        .'<select name="schedule['.$day.']['.$i.'][ph1]" class="ph-select" data-slot="S1">'
+                                            .'<option value="A"'.($ph1=='A'?' selected':'').' style="background-color:'.$pharmacists['A']['color'].'">'.htmlspecialchars($pharmacists['A']['name']).' S1</option>'
+                                            .'<option value="B"'.($ph1=='B'?' selected':'').' style="background-color:'.$pharmacists['B']['color'].'">'.htmlspecialchars($pharmacists['B']['name']).' S1</option>'
                                         .'</select>'
-                                        .'<select name="schedule['.$day.']['.$i.'][ph2]">'
-                                            .'<option value="A"'.($ph2=='A'?' selected':'').'>A S2</option>'
-                                            .'<option value="B"'.($ph2=='B'?' selected':'').'>B S2</option>'
+                                        .'<select name="schedule['.$day.']['.$i.'][ph2]" class="ph-select" data-slot="S2">'
+                                            .'<option value="A"'.($ph2=='A'?' selected':'').' style="background-color:'.$pharmacists['A']['color'].'">'.htmlspecialchars($pharmacists['A']['name']).' S2</option>'
+                                            .'<option value="B"'.($ph2=='B'?' selected':'').' style="background-color:'.$pharmacists['B']['color'].'">'.htmlspecialchars($pharmacists['B']['name']).' S2</option>'
                                         .'</select>'
                                         .'</div>';
                                 }
@@ -150,8 +175,8 @@ if ($new && !$code) {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td>Pharmacien A</td><td id="w1A">0</td><td id="w2A">0</td><td id="totA">0</td></tr>
-                    <tr><td>Pharmacien B</td><td id="w1B">0</td><td id="w2B">0</td><td id="totB">0</td></tr>
+                    <tr><td id="labelA" style="color: <?php echo htmlspecialchars($pharmacists['A']['color']); ?>"><?php echo htmlspecialchars($pharmacists['A']['name']); ?></td><td id="w1A">0</td><td id="w2A">0</td><td id="totA">0</td></tr>
+                    <tr><td id="labelB" style="color: <?php echo htmlspecialchars($pharmacists['B']['color']); ?>"><?php echo htmlspecialchars($pharmacists['B']['name']); ?></td><td id="w1B">0</td><td id="w2B">0</td><td id="totB">0</td></tr>
                 </tbody>
             </table>
             <p class="open-hours">Heures d'ouverture (Lun-Sam): <span id="openHours">0</span></p>
