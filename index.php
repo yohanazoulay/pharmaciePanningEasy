@@ -228,6 +228,12 @@ if ($new && !$code) {
     <p class="code-info"><a class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded inline-block" target="_blank" href="print.php?code=<?php echo htmlspecialchars($code); ?>">Planning imprimable (PDF)</a></p>
 <?php endif; ?>
 </div>
+<footer class="text-center text-sm mt-4">
+    Fait avec amour par Meditrust pour les pharmacies
+    <a href="https://meditrust.io/contacter-nous/" target="_blank">
+        <img src="https://meditrust.io/wp-content/uploads/2023/09/meditrust-logo-green.png" alt="Logo Meditrust" class="inline-block h-6 align-middle ml-2">
+    </a>
+</footer>
 <div id="toast" data-message="<?php echo htmlspecialchars($message); ?>" data-error="<?php echo htmlspecialchars($error); ?>"></div>
 <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
 </body>
