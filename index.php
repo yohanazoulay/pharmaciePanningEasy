@@ -61,56 +61,88 @@ if ($new && !$code) {
     <?php if($message): ?><p class="message"><?php echo htmlspecialchars($message); ?></p><?php endif; ?>
     <div class="columns">
         <div class="planner">
-            <h2>Ce que vous avez fait aujourd'hui</h2>
             <form method="post" id="scheduleForm">
                 <input type="hidden" name="code" value="<?php echo htmlspecialchars($code); ?>">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Jour</th>
-                            <th>Tranches d'ouverture</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $daysNames = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
-                        for($day=0;$day<7;$day++){
-                            $segments = $data['schedule'][$day] ?? [];
-                            echo '<tr>';
-                            echo '<td>'.$daysNames[$day].'</td>';
-                            echo '<td class="segments" data-day="'.$day.'">';
-                            foreach($segments as $i=>$seg){
-                                $start = htmlspecialchars($seg['start'] ?? '');
-                                $end = htmlspecialchars($seg['end'] ?? '');
-                                $ph1 = $seg['ph1'] ?? 'A';
-                                $ph2 = $seg['ph2'] ?? 'A';
-                                echo '<div class="segment">'
-                                    .'<input type="time" name="schedule['.$day.']['.$i.'][start]" value="'.$start.'">'
-                                    .'<input type="time" name="schedule['.$day.']['.$i.'][end]" value="'.$end.'">'
-                                    .'<select name="schedule['.$day.']['.$i.'][ph1]">'
-                                        .'<option value="A"'.($ph1=='A'?' selected':'').'>A S1</option>'
-                                        .'<option value="B"'.($ph1=='B'?' selected':'').'>B S1</option>'
-                                    .'</select>'
-                                    .'<select name="schedule['.$day.']['.$i.'][ph2]">'
-                                        .'<option value="A"'.($ph2=='A'?' selected':'').'>A S2</option>'
-                                        .'<option value="B"'.($ph2=='B'?' selected':'').'>B S2</option>'
-                                    .'</select>'
-                                    .'<button type="button" class="remove-segment">&times;</button>'
-                                    .'</div>';
+                <?php $daysNames = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche']; ?>
+                <div class="section section-openings">
+                    <h2>Section 1 : Horaires d'ouverture</h2>
+                    <table class="openings">
+                        <thead>
+                            <tr>
+                                <th>Jour</th>
+                                <th>Tranches d'ouverture</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            for($day=0;$day<7;$day++){
+                                $segments = $data['schedule'][$day] ?? [];
+                                echo '<tr>';
+                                echo '<td>'.$daysNames[$day].'</td>';
+                                echo '<td class="segments-open" data-day="'.$day.'">';
+                                foreach($segments as $i=>$seg){
+                                    $start = htmlspecialchars($seg['start'] ?? '');
+                                    $end = htmlspecialchars($seg['end'] ?? '');
+                                    echo '<div class="segment" data-index="'.$i.'">'
+                                        .'<input type="time" name="schedule['.$day.']['.$i.'][start]" value="'.$start.'">'
+                                        .'<input type="time" name="schedule['.$day.']['.$i.'][end]" value="'.$end.'">'
+                                        .'<button type="button" class="remove-segment">&times;</button>'
+                                        .'</div>';
+                                }
+                                echo '</td>';
+                                echo '<td><button type="button" class="add-segment" data-day="'.$day.'">Ajouter tranche</button></td>';
+                                echo '</tr>';
                             }
-                            echo '</td>';
-                            echo '<td><button type="button" class="add-segment" data-day="'.$day.'">Ajouter tranche</button></td>';
-                            echo '</tr>';
-                        }
-                        ?>
-                    </tbody>
-                </table>
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section section-pharmacists">
+                    <h2>Section 2 : Planning des pharmaciens</h2>
+                    <table class="planning">
+                        <thead>
+                            <tr>
+                                <th>Jour</th>
+                                <th>Planning</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            for($day=0;$day<7;$day++){
+                                $segments = $data['schedule'][$day] ?? [];
+                                echo '<tr>';
+                                echo '<td>'.$daysNames[$day].'</td>';
+                                echo '<td class="segments-pharm" data-day="'.$day.'">';
+                                foreach($segments as $i=>$seg){
+                                    $start = htmlspecialchars($seg['start'] ?? '');
+                                    $end = htmlspecialchars($seg['end'] ?? '');
+                                    $ph1 = $seg['ph1'] ?? 'A';
+                                    $ph2 = $seg['ph2'] ?? 'A';
+                                    echo '<div class="segment" data-index="'.$i.'">'
+                                        .'<span class="time-range">'.$start.' - '.$end.'</span>'
+                                        .'<select name="schedule['.$day.']['.$i.'][ph1]">'
+                                            .'<option value="A"'.($ph1=='A'?' selected':'').'>A S1</option>'
+                                            .'<option value="B"'.($ph1=='B'?' selected':'').'>B S1</option>'
+                                        .'</select>'
+                                        .'<select name="schedule['.$day.']['.$i.'][ph2]">'
+                                            .'<option value="A"'.($ph2=='A'?' selected':'').'>A S2</option>'
+                                            .'<option value="B"'.($ph2=='B'?' selected':'').'>B S2</option>'
+                                        .'</select>'
+                                        .'</div>';
+                                }
+                                echo '</td>';
+                                echo '</tr>';
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
                 <button class="btn" type="submit" name="save" id="saveBtn">Sauvegarder</button>
             </form>
         </div>
         <div class="summary">
-            <h2>Récapitulatif</h2>
+            <h2>Section 3 : Récapitulatif</h2>
             <table class="recap">
                 <thead>
                     <tr>
