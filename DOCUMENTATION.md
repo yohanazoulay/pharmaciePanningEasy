@@ -12,6 +12,7 @@ Ce projet est une application web légère permettant de gérer les horaires d'o
 - **Calcul automatique** : le script JavaScript calcule en temps réel le nombre d'heures effectuées par chaque pharmacien pour chaque semaine, le total sur deux semaines ainsi que le nombre d'heures d'ouverture. L'enregistrement est désactivé si un pharmacien dépasse 70 heures.
  - **Sauvegarde** : les données sont enregistrées côté serveur dans un fichier `.save` nommé d'après le code du projet. Un message toast confirme la réussite (ou signale une erreur) et rappelle de noter le code.
 - **Nettoyage** : à chaque chargement de la page, les fichiers `.save` plus anciens que 15 jours sont automatiquement supprimés.
+- **Export PDF** : un bouton « Planning imprimable (PDF) » ouvre une vue A4 paysage (semaine 1 puis semaine 2) prête à être imprimée ou enregistrée en PDF.
 
 ## Structure des fichiers
 - **`index.php`** : point d'entrée de l'application. Gère la création ou le chargement d'un projet, lit et écrit les données dans les fichiers `.save` et génère le formulaire HTML du planning.
