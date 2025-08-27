@@ -226,6 +226,7 @@ if ($new && !$code) {
         </div>
     </div>
     <p class="code-info">Code du projet: <strong><?php echo htmlspecialchars($code); ?></strong></p>
+    <p class="code-info"><a class="btn" target="_blank" href="print.php?code=<?php echo htmlspecialchars($code); ?>">Planning imprimable (PDF)</a></p>
 <?php endif; ?>
 </div>
 <div id="toast" data-message="<?php echo htmlspecialchars($message); ?>" data-error="<?php echo htmlspecialchars($error); ?>"></div>
