@@ -89,3 +89,17 @@ input[type="time"], select {
 @media (min-width:800px){
     .columns {flex-direction: row; align-items:flex-start;}
 }
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #4caf50;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 6px;
+    opacity: 0;
+    transition: opacity .5s;
+    z-index: 1000;
+}
+.toast.show {opacity:1;}
+.toast.error {background:#f44336;}
