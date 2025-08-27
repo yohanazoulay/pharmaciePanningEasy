@@ -20,4 +20,5 @@ Ce projet est une application web légère permettant de gérer les horaires d'o
 ## Notes
 - Les fichiers `.save` contiennent les données JSON des projets et ne sont pas versionnés.
 - Un suivi de bugs séparé doit être maintenu pour chaque fonctionnalité.
+- Les fichiers CSS et JS sont chargés avec un paramètre de version basé sur leur date de modification afin d'éviter les problèmes de cache.
 
