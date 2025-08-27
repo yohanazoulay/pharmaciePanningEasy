@@ -28,6 +28,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
     $data['schedule'] = $_POST['schedule'] ?? [];
     $data['pharm_sched'] = $_POST['pharm_sched'] ?? [];
     $data['pharmacists'] = $_POST['pharmacists'] ?? $data['pharmacists'];
+    $invalid = false;
+    foreach($data['pharm_sched'] as $d=>&$segs){
+        $opens = $data['schedule'][$d] ?? [];
+        foreach($segs as $i=>$seg){
+            $s = $seg['start'] ?? '';
+            $e = $seg['end'] ?? '';
+            $inside = false;
+            if($s && $e){
+                foreach($opens as $o){
+                    if($s >= ($o['start'] ?? '') && $e <= ($o['end'] ?? '')){ $inside = true; break; }
+                }
+            }
+            if(!$inside){ unset($segs[$i]); $invalid = true; }
+        }
+        $segs = array_values($segs);
+    }
+    if($invalid){
+        $error = 'Tranches pharmaciens hors horaires d\'ouverture ignorées.';
+    }
     if (file_put_contents("$code.save", json_encode($data)) !== false) {
         $message = 'Projet sauvegardé. Pensez à noter votre code d\'accès pour réouvrir votre travail.';
     } else {

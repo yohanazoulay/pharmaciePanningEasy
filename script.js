@@ -55,11 +55,12 @@ function addOpenSegment(day, data={}){
         <button type="button" class="remove-segment">&times;</button>
     `;
     container.appendChild(seg);
-    seg.querySelectorAll('input').forEach(el=>el.addEventListener('change', calculateHours));
+    seg.querySelectorAll('input').forEach(el=>el.addEventListener('change', ()=>{calculateHours();validateDayPharm(day);}));
     seg.querySelector('.remove-segment').addEventListener('click', ()=>{
         seg.remove();
         renumberOpenSegments(day);
         calculateHours();
+        validateDayPharm(day);
     });
     calculateHours();
 }
@@ -75,17 +76,65 @@ function renumberOpenSegments(day){
     });
 }
 
+function parseTime(str){
+    const [h,m] = str.split(':').map(Number);
+    return h*60 + m;
+}
+
+function isWithinOpening(day,start,end){
+    const container = document.querySelector(`.segments-open[data-day="${day}"]`);
+    if(!container) return false;
+    const s = parseTime(start);
+    const e = parseTime(end);
+    let ok = false;
+    container.querySelectorAll('.segment').forEach(seg=>{
+        const os = seg.querySelector('input[name$="[start]"]').value;
+        const oe = seg.querySelector('input[name$="[end]"]').value;
+        if(os && oe){
+            const osMin = parseTime(os);
+            const oeMin = parseTime(oe);
+            if(s >= osMin && e <= oeMin) ok = true;
+        }
+    });
+    return ok;
+}
+
+function validatePharmSegment(day,seg){
+    const startEl = seg.querySelector('input[name$="[start]"]');
+    const endEl = seg.querySelector('input[name$="[end]"]');
+    const start = startEl.value;
+    const end = endEl.value;
+    if(start && end && !isWithinOpening(day,start,end)){
+        showToast("Tranche en dehors des horaires d'ouverture", true);
+        startEl.value='';
+        endEl.value='';
+        return false;
+    }
+    return true;
+}
+
+function validateDayPharm(day){
+    document.querySelectorAll(`.segments-pharm[data-day="${day}"] .segment`).forEach(seg=>validatePharmSegment(day,seg));
+}
+
 function addPharmSegment(day, data={}){
     const container = document.querySelector(`.segments-pharm[data-day="${day}"]`);
-    if(!container) return;
+    const openContainer = document.querySelector(`.segments-open[data-day="${day}"]`);
+    if(!container || !openContainer || openContainer.querySelectorAll('.segment').length===0){
+        showToast('Ajoutez d\'abord des horaires d\'ouverture pour ce jour.', true);
+        return;
+    }
     const index = container.querySelectorAll('.segment').length;
     const info = getPharmacistInfo();
+    const firstOpen = openContainer.querySelector('.segment');
+    const defaultStart = data.start || (firstOpen ? firstOpen.querySelector('input[name$="[start]"]').value : '');
+    const defaultEnd = data.end || (firstOpen ? firstOpen.querySelector('input[name$="[end]"]').value : '');
     const seg = document.createElement('div');
     seg.className = 'segment';
     seg.dataset.index = index;
     seg.innerHTML = `
-        <input type="time" name="pharm_sched[${day}][${index}][start]" value="${data.start||''}">
-        <input type="time" name="pharm_sched[${day}][${index}][end]" value="${data.end||''}">
+        <input type="time" name="pharm_sched[${day}][${index}][start]" value="${defaultStart}">
+        <input type="time" name="pharm_sched[${day}][${index}][end]" value="${defaultEnd}">
         <select name="pharm_sched[${day}][${index}][ph1]" class="ph-select" data-slot="S1">
             <option value="A" ${data.ph1==='B'?'':'selected'}>${info.A.name} S1</option>
             <option value="B" ${data.ph1==='B'?'selected':''}>${info.B.name} S1</option>
@@ -98,13 +147,14 @@ function addPharmSegment(day, data={}){
     `;
     const addBtn = container.querySelector('.add-pharm');
     container.insertBefore(seg, addBtn);
-    seg.querySelectorAll('input').forEach(el=>el.addEventListener('change', calculateHours));
+    seg.querySelectorAll('input').forEach(el=>el.addEventListener('change', ()=>{validatePharmSegment(day,seg);calculateHours();}));
     seg.querySelectorAll('select').forEach(el=>el.addEventListener('change', ()=>{applySelectStyles();calculateHours();}));
     seg.querySelector('.remove-pharm').addEventListener('click', ()=>{
         seg.remove();
         renumberPharmSegments(day);
         calculateHours();
     });
+    validatePharmSegment(day,seg);
     applySelectStyles();
     calculateHours();
 }
@@ -183,11 +233,12 @@ if(document.getElementById('scheduleForm')){
     document.querySelectorAll('.segments-open').forEach(dayContainer=>{
         const day = dayContainer.dataset.day;
         dayContainer.querySelectorAll('.segment').forEach(seg=>{
-            seg.querySelectorAll('input').forEach(el=>el.addEventListener('change', calculateHours));
+            seg.querySelectorAll('input').forEach(el=>el.addEventListener('change', ()=>{calculateHours();validateDayPharm(day);}));
             seg.querySelector('.remove-segment').addEventListener('click',()=>{
                 seg.remove();
                 renumberOpenSegments(day);
                 calculateHours();
+                validateDayPharm(day);
             });
         });
     });
@@ -198,7 +249,7 @@ if(document.getElementById('scheduleForm')){
     document.querySelectorAll('.segments-pharm').forEach(dayContainer=>{
         const day = dayContainer.dataset.day;
         dayContainer.querySelectorAll('.segment').forEach(seg=>{
-            seg.querySelectorAll('input').forEach(el=>el.addEventListener('change', calculateHours));
+            seg.querySelectorAll('input').forEach(el=>el.addEventListener('change', ()=>{validatePharmSegment(day,seg);calculateHours();}));
             seg.querySelectorAll('select').forEach(el=>el.addEventListener('change', ()=>{applySelectStyles();calculateHours();}));
             const rem = seg.querySelector('.remove-pharm');
             if(rem) rem.addEventListener('click',()=>{
@@ -206,6 +257,7 @@ if(document.getElementById('scheduleForm')){
                 renumberPharmSegments(day);
                 calculateHours();
             });
+            validatePharmSegment(day,seg);
         });
     });
 
