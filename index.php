@@ -234,6 +234,8 @@ if ($new && !$code) {
     <a href="https://meditrust.io/contacter-nous/" target="_blank">
         <img src="https://meditrust.io/wp-content/uploads/2023/09/meditrust-logo-green.png" alt="Logo Meditrust" class="inline-block h-6 align-middle ml-2">
     </a>
+    <br>
+    Created By <a href="https://x.com/yazoulay" target="_blank">@Yohan Azoulay</a>
 </footer>
 <div id="toast" data-message="<?php echo htmlspecialchars($message); ?>" data-error="<?php echo htmlspecialchars($error); ?>"></div>
 <div id="helpOverlay" class="help-overlay"></div>
